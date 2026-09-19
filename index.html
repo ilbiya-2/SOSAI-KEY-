@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SOSAI KEY | One Voice Can Save a Life</title>
+
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#10170d;color:#f2f0dc;font-family:Arial,sans-serif}
+a{text-decoration:none;color:inherit}
+nav{position:sticky;top:0;z-index:9;padding:16px 6%;display:flex;justify-content:space-between;background:#10170dee;border-bottom:1px solid #4b5733;backdrop-filter:blur(12px)}
+.logo{font-weight:900;letter-spacing:2px}.navlinks{display:flex;gap:22px;font-size:14px;color:#bdd0c2}
+.hero{min-height:650px;padding:48px 7%;display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:30px}
+.eyebrow{color:#c9d86f;text-transform:uppercase;letter-spacing:3px;font-size:12px;font-weight:bold}
+h1{font-size:clamp(48px,7vw,90px);line-height:.9;letter-spacing:-4px;margin:18px 0}
+h1 span{color:#c9d86f}
+p{color:#b9b69d;line-height:1.7}
+.btn{border:1px solid #82964a;background:#153522;color:white;padding:13px 18px;border-radius:13px;font-weight:bold;cursor:pointer}
+.primary{background:#c9d86f;color:#102015;border-color:#c9d86f}
+.cta{display:flex;gap:12px;margin-top:25px;flex-wrap:wrap}
+
+/* 3D MODEL AREA */
+
+/* Reliable GLB model viewer */
+#modelViewer{position:absolute;inset:0;z-index:2}
+#modelViewer::part(default-progress-bar){background:#c9d86f}
+.model-loading{z-index:5}
+.model-error{z-index:6}
+.device-stage{height:520px;position:relative;border:1px solid #4b5733;border-radius:28px;background:radial-gradient(circle at 50% 45%,#39452a,#10170d 70%);overflow:hidden}
+#modelCanvas{width:100%;height:100%;display:block;touch-action:none}
+.model-title{position:absolute;top:18px;left:50%;transform:translateX(-50%);z-index:4;padding:11px 16px;border:1px solid #82964a;border-radius:999px;background:#10170dd9;color:#e6ebcf;font-size:12px;font-weight:800;letter-spacing:1.5px;white-space:nowrap}
+.model-help{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);z-index:4;width:max-content;max-width:90%;padding:10px 14px;border:1px solid #4b5733;border-radius:13px;background:#10170dd9;color:#b9b69d;font-size:12px;text-align:center}
+.model-loading{position:absolute;inset:0;display:grid;place-items:center;z-index:3;color:#c9d86f;font-weight:bold;pointer-events:none}
+.model-error{display:none;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:5;width:82%;padding:16px;border:1px solid #81343b;border-radius:15px;background:#32171b;color:#ffd9dc;text-align:center}
+.model-error.show{display:block}
+
+/* Interactive SOS control */
+.sos-hotspot{position:absolute;left:50%;top:53%;transform:translate(-50%,-50%);z-index:6;width:105px;height:105px;border-radius:50%;border:4px solid #5a3c25;background:radial-gradient(circle at 35% 25%,#765137,#4d3321 70%);color:#fff;font-size:25px;font-weight:900;cursor:pointer;box-shadow:inset 0 4px 10px #fff2,0 7px 18px #0007;transition:.2s}
+.sos-hotspot small{display:block;font-size:14px;margin-top:3px}
+.sos-hotspot:hover{transform:translate(-50%,-50%) scale(1.05)}
+.sos-hotspot.active{animation:sosPulse .8s infinite}
+@keyframes sosPulse{50%{box-shadow:0 0 0 18px #d96b4b22,0 0 35px #d96b4b}}
+.led-overlay{position:absolute;left:calc(50% + 54px);top:calc(53% - 78px);z-index:6;width:17px;height:17px;border-radius:50%;background:#fff;box-shadow:0 0 8px #fff,0 0 24px #c9d86f;pointer-events:none}
+.led-overlay.alert{background:#d96b4b;box-shadow:0 0 10px #fff,0 0 28px #d96b4b}
+
+section{padding:55px 7%}.title{max-width:760px;margin-bottom:30px}.title h2{font-size:48px;margin:10px 0}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.card,.panel{background:#202818;border:1px solid #4b5733;border-radius:22px;padding:22px}
+.card{min-height:145px;padding:18px}.card h3{margin:14px 0 7px}.card p{font-size:14px}
+.demo{display:grid;grid-template-columns:1fr 1.2fr;gap:18px}.status{font-size:13px;color:#b7b89a}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#a7c957;box-shadow:0 0 12px #a7c957;margin-right:8px}
+.sensor{display:grid;grid-template-columns:1fr auto;gap:10px;margin:18px 0;font-size:13px;color:#b6b29a}
+.bar{height:8px;background:#344128;border-radius:10px;margin-top:7px;overflow:hidden}.bar i{display:block;height:100%;width:30%;background:#c9d86f;transition:.5s}
+.value{font-weight:bold;color:#e8f3e2}
+.flow{display:flex;align-items:center;justify-content:center;gap:7px;flex-wrap:wrap;margin:25px 0}
+.node{padding:12px;border:1px solid #6f7f3d;border-radius:13px;background:#26301d;text-align:center;font-size:12px;min-width:95px}
+.node.active{border-color:#c9d86f;box-shadow:0 0 22px #a9d87833}
+.log{height:190px;overflow:auto;background:#0c120a;border:1px solid #303b24;border-radius:14px;padding:13px;font:12px monospace;color:#9cc8a7}
+.log div{margin-bottom:8px}
+.alert{display:none;margin-top:15px;border:1px solid #81343b;background:#32171b;padding:15px;border-radius:15px}.alert.show{display:block}
+.dashboard{display:grid;grid-template-columns:1.2fr .8fr;gap:18px}.map{height:270px;border:1px solid #4b5733;border-radius:18px;background:linear-gradient(135deg,#26311c,#151d12);position:relative;overflow:hidden}
+.map:before{content:"";position:absolute;inset:0;background:linear-gradient(30deg,transparent 48%,#3d492e 49%,transparent 51%),linear-gradient(120deg,transparent 48%,#3d492e 49%,transparent 51%);background-size:90px 70px}
+.pin{position:absolute;left:58%;top:42%;width:20px;height:20px;border-radius:50%;background:#d96b4b;box-shadow:0 0 0 10px #d96b4b22,0 0 28px #d96b4b;display:none}.pin.active{display:block;animation:mapPulse 1.2s infinite}@keyframes mapPulse{50%{box-shadow:0 0 0 18px #d96b4b22,0 0 32px #d96b4b}}
+.label{position:absolute;bottom:12px;left:12px;background:#10170dee;padding:8px;border-radius:8px;font-size:11px}
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:12px}.metric{background:#1b2416;border:1px solid #3d492e;padding:17px;border-radius:15px}
+.metric span{font-size:12px;color:#979a7e}.metric strong{display:block;font-size:25px;margin-top:6px}
+footer{padding:35px 7%;border-top:1px solid #39442b;color:#85866e;font-size:12px;display:flex;justify-content:space-between}
+@media(max-width:850px){.hero,.demo,.dashboard{grid-template-columns:1fr}.dashboard[style]{grid-template-columns:1fr !important}.cards{grid-template-columns:1fr 1fr}.navlinks{display:none}}
+@media(max-width:520px){.cards{grid-template-columns:1fr}.title h2{font-size:34px}.device-stage{height:470px}.sos-hotspot{width:90px;height:90px;font-size:21px}.led-overlay{left:calc(50% + 45px);top:calc(53% - 68px)}}
+</style>
+</head>
+
+<body>
+<nav>
+  <div class="logo">🥑 SOSAI KEY</div>
+  <div class="navlinks"><a href="#features">Features</a><a href="#demo">Live Demo</a><a href="#system">System</a><a href="#privacy">Privacy</a></div>
+</nav>
+
+<header class="hero">
+  <div>
+    <div class="eyebrow">AI-powered personal safety prototype</div>
+    <h1>One voice.<br><span>One key.</span><br>One chance.</h1>
+    <p>SOSAI KEY is a small, portable safety keychain concept that combines sound, buzz/vibration, temperature and GPS signals with AI verification before preparing an emergency alert.</p>
+    <div class="cta"><a class="btn primary" href="#demo">▶ Try Prototype</a><a class="btn" href="#system">Explore System ↓</a></div>
+    <p style="font-size:12px">Prototype demonstration only. Sensor readings and alerts on this website are simulated.</p>
+  </div>
+
+  <div class="device-stage" id="stage">
+    <div class="model-title">INTERACTIVE 3D PROTOTYPE</div>
+
+    <div class="model-loading" id="modelLoading">
+      Loading SOSAI KEY 3D model…
+    </div>
+
+    <div class="model-error" id="modelError">
+      The 3D model could not be loaded.<br>
+      Make sure <b>SOSAI_KEY_INTERACTIVE.glb</b> is in the same folder as <b>index.html</b>.
+    </div>
+
+    <model-viewer
+      id="modelViewer"
+      src="./SOSAI_KEY_INTERACTIVE.glb"
+      alt="Interactive 3D model of SOSAI KEY"
+      camera-controls
+      touch-action="pan-y"
+      interaction-prompt="auto"
+      shadow-intensity="1"
+      exposure="1.05"
+      environment-image="neutral"
+      camera-orbit="0deg 75deg auto"
+      min-camera-orbit="auto auto 1m"
+      max-camera-orbit="auto auto 8m"
+      field-of-view="30deg"
+      style="width:100%;height:100%;background:transparent;">
+    </model-viewer>
+
+    <button class="sos-hotspot" id="sos3D" style="display:none;">
+      SOS<small>PRESS</small>
+    </button>
+
+    <div class="led-overlay" id="led"></div>
+    <div class="model-help">
+      Touch/drag to rotate • Pinch to zoom • Press SOS
+    </div>
+  </div>
+</header>
+
+<section id="features">
+  <div class="title"><div class="eyebrow">Designed around the user</div><h2>Small enough to carry. Smart enough to respond.</h2><p>Designed with accessibility, portability, fast response and privacy in mind.</p></div>
+  <div class="cards">
+    <div class="card">🎙️<h3>Sound Detection</h3><p>Detects an unusual sound pattern and passes the event to the verification layer.</p></div>
+    <div class="card">🧠<h3>AI Verification</h3><p>Cross-checks multiple signals before an emergency event is classified.</p></div>
+    <div class="card">📍<h3>GPS Location</h3><p>Prepares simulated location information so help can know where the event occurred.</p></div>
+    <div class="card">🔐<h3>Privacy First</h3><p>Emergency information is represented as an encrypted data package in this concept.</p></div>
+  </div>
+</section>
+
+<section id="demo">
+  <div class="title">
+    <div class="eyebrow">Emergency command dashboard</div>
+    <h2>Emergency status</h2>
+    <p>One compact view showing the simulated sensors, AI verification and emergency location.</p>
+  </div>
+
+  <div class="dashboard" style="grid-template-columns:1fr 1fr;">
+    <div class="panel">
+      <div class="status"><span class="dot"></span><span id="status">Device online • Ready</span></div>
+      <h3>Simulated sensors</h3>
+
+      <div class="sensor"><div>Sound intensity<div class="bar"><i id="sb"></i></div></div><div class="value" id="sv">18 dB</div></div>
+      <div class="sensor"><div>Buzz / vibration<div class="bar"><i id="bb"></i></div></div><div class="value" id="bv">0.12 g</div></div>
+      <div class="sensor"><div>Temperature<div class="bar"><i id="tb"></i></div></div><div class="value" id="tv">27.4 °C</div></div>
+      <div class="sensor"><div>GPS accuracy<div class="bar"><i id="gb"></i></div></div><div class="value" id="gv">±8 m</div></div>
+
+      <button class="btn primary" id="simulate">Simulate Emergency Detection</button>
+
+      <div class="alert" id="alert">
+        🚨 <b>SIMULATED EMERGENCY ALERT</b><br>
+        Verification completed. Encrypted event data + GPS location prepared. No real authorities are contacted.
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>📍 Emergency location</h3>
+
+      <div class="map" id="emergencyMap">
+        <div class="pin" id="mapPin"></div>
+        <div class="label" id="mapLabel">
+          📍 Waiting for emergency detection…<br>
+          Location will appear here after SOS activation.
+        </div>
+      </div>
+
+      <div id="locationDetails" style="margin-top:12px;padding:12px;border:1px solid #4b5733;border-radius:14px;background:#151d12;color:#b6b29a;font-size:12px;">
+        <b style="color:#e6ebcf;">Location status:</b> Standby
+      </div>
+
+      <h3 style="margin-top:20px;">AI verification</h3>
+      <div class="flow" style="margin:12px 0;">
+        <div class="node" data-n="1">🎙️<br>DETECT</div>→
+        <div class="node" data-n="2">📡<br>COLLECT</div>→
+        <div class="node" data-n="3">🧠<br>VERIFY</div>→
+        <div class="node" data-n="4">📍<br>LOCATE</div>→
+        <div class="node" data-n="5">🚨<br>ALERT</div>
+      </div>
+      <div class="log" id="log" style="height:105px;">
+        <div>[SYSTEM] SOSAI KEY initialized.</div>
+        <div>[SYSTEM] Waiting for an event…</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="system">
+  <div class="title">
+    <div class="eyebrow">System flow</div>
+    <h2>From signal to response.</h2>
+  </div>
+  <div class="cards" style="grid-template-columns:repeat(4,1fr);">
+    <div class="card">🔘<h3>SOS</h3><p>User activates the emergency control.</p></div>
+    <div class="card">📡<h3>Gather</h3><p>Sound, vibration, temperature and GPS are collected.</p></div>
+    <div class="card">🧠<h3>Verify</h3><p>AI checks the simulated signals together.</p></div>
+    <div class="card">🚨<h3>Alert</h3><p>An emergency package is prepared with the location.</p></div>
+  </div>
+</section>
+
+<section id="privacy">
+  <div class="title"><div class="eyebrow">Privacy architecture</div><h2>Protection is part of the design.</h2></div>
+  <div class="dashboard">
+    <div class="panel">🔒<h3>Encrypted emergency data</h3><p>In a real deployment, encryption, authentication, retention and access controls would be implemented securely on the backend.</p></div>
+    <div class="panel">🛡️<h3>Multi-signal verification</h3><p>The concept checks more than one signal to help reduce false alarms before an emergency notification is prepared.</p></div>
+  </div>
+</section>
+
+<footer><span>© 2026 SOSAI KEY • Prototype Showcase</span><span>TOGETHER WITH SOSAI KEY, ONE VOICE CAN SAVE A LIFE.</span></footer>
+
+<!-- Reliable GLB viewer: GLB is the binary glTF format -->
+<script type="module"
+  src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js">
+</script>
+
+<script>
+const viewer = document.getElementById('modelViewer');
+const loading = document.getElementById('modelLoading');
+const errorBox = document.getElementById('modelError');
+const sos3D = document.getElementById('sos3D');
+
+viewer.addEventListener('load', () => {
+  loading.style.display = 'none';
+  errorBox.classList.remove('show');
+  sos3D.style.display = 'block';
+});
+
+viewer.addEventListener('error', () => {
+  loading.style.display = 'none';
+  errorBox.classList.add('show');
+  sos3D.style.display = 'none';
+  console.error('SOSAI KEY GLB failed to load:', viewer.src);
+});
+
+/* If the file takes a moment on GitHub Pages, keep the loading message visible. */
+window.addEventListener('load', () => {
+  if (viewer.loaded) {
+    loading.style.display = 'none';
+  }
+});
+
+/* The website SOS control triggers the same prototype simulation.
+   The GLB itself remains the user's Onshape model. */
+sos3D.addEventListener('click', () => {
+  if (typeof run === 'function') run();
+});
+
+/* Keyboard accessibility */
+sos3D.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    if (typeof run === 'function') run();
+  }
+});
+</script>
+
+</body>
+</html>
